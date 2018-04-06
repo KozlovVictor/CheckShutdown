@@ -12,7 +12,7 @@ public class Server {
     private Socket socket = null;
     private DataInputStream in = null;
     private DataOutputStream out = null;
-    private Timer delay = null;
+    private Timer delay;
 
     public Server() {
         try {
@@ -20,9 +20,21 @@ public class Server {
             System.out.println("Server started! Wait a clients.");
             socket = serverSocket.accept();
             System.out.println("Client connected succesfully.");
-            in =  new DataInputStream(socket.getInputStream());
+            in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
-            new Thread (()->{
+            delay = new Timer();
+            delay.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        out.writeUTF("info");
+                        out.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            },1000, 2000);
+            new Thread(()->{
                 while (true) {
                     String clientMessage = null;
                     try {
@@ -33,31 +45,8 @@ public class Server {
                     System.out.println(clientMessage);
                 }
             }).start();
-            //while (true) {
-                delay = new Timer();
-                delay.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        try {
-                            out.writeUTF("info");
-                            out.flush();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, 5000);
-            //}
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                socket.close();
-                //in.close();
-                //out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-
     }
 }

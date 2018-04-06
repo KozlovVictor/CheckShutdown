@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Client {
 
@@ -14,7 +16,6 @@ public class Client {
     private DataInputStream in = null;
     private DataOutputStream out = null;
     private String serverMessage = null;
-    //private Inet4Address ip = null;
 
     public Client() {
         try {
@@ -30,14 +31,6 @@ public class Client {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                socket.close();
-                //in.close();
-                //out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
