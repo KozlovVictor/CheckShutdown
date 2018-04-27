@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Client {
 
     private final int PORT = 8189;
-    private final String SERVER_ADDRESS = "localhost";
+    private String serverAddress;
     private Socket socket = null;
     private DataInputStream in = null;
     private DataOutputStream out = null;
@@ -18,8 +18,9 @@ public class Client {
 
     public Client() {
         try {
-            socket = new Socket(SERVER_ADDRESS, PORT);
-            System.out.println("Connected with " + SERVER_ADDRESS);
+            serverAddress = "localhost";
+            socket = new Socket(serverAddress, PORT);
+            System.out.println("Connected with " + serverAddress);
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
             while (true) {
@@ -30,14 +31,24 @@ public class Client {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                socket.close();
-                //in.close();
-                //out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+        }
+    }
+
+    public Client(String serverAddress) {
+        this.serverAddress = serverAddress;
+        try {
+            socket = new Socket(serverAddress, PORT);
+            System.out.println("Connected with " + serverAddress);
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
+            while (true) {
+                serverMessage = in.readUTF();
+                if (serverMessage.equals("info")) {
+                    getInfo();
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,6 +1,8 @@
 package ru.myprojects.server;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Timer;
@@ -8,11 +10,14 @@ import java.util.TimerTask;
 
 public class Server {
     private final int PORT = 8189;
+    private final int TIME_DELAY = 5000;
     private ServerSocket serverSocket = null;
     private Socket socket = null;
     private DataInputStream in = null;
     private DataOutputStream out = null;
     private Timer delay = null;
+    //private Arr
+
 
     public Server() {
         try {
@@ -20,9 +25,9 @@ public class Server {
             System.out.println("Server started! Wait a clients.");
             socket = serverSocket.accept();
             System.out.println("Client connected succesfully.");
-            in =  new DataInputStream(socket.getInputStream());
+            in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
-            new Thread (()->{
+            new Thread(() -> {
                 while (true) {
                     String clientMessage = null;
                     try {
@@ -33,31 +38,20 @@ public class Server {
                     System.out.println(clientMessage);
                 }
             }).start();
-            //while (true) {
-                delay = new Timer();
-                delay.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        try {
-                            out.writeUTF("info");
-                            out.flush();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+            delay = new Timer();
+            delay.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        out.writeUTF("info");
+                        out.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                }, 5000);
-            //}
+                }
+            }, TIME_DELAY, TIME_DELAY);
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                socket.close();
-                //in.close();
-                //out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-
     }
 }
